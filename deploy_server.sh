@@ -1,5 +1,5 @@
 #!/bin/sh
-set -ex
+#set -ex
 
 mvn clean package -DskipTests
 az extension add --name spring-cloud
