@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_event")
-@JsonIgnoreProperties({"tickets", "venue"})
+@JsonIgnoreProperties({"tickets"})
 public class Event {
 	
 	@Id
@@ -21,24 +21,24 @@ public class Event {
 	private String name;
 	// live concert / online concert / fan meeting
 	private String eventType;
-	/* yyyy/mm/dd/sh/eh */
-	private int[] dateAndTime;
-	@ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "venue_id")
-	@JsonIgnoreProperties("events")
-	private Venue venue;
-	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
-	@JsonIgnoreProperties("event")
+	private String dateAndTime;
+//	@ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
+//	@JoinColumn(name = "venue_id")
+//	@JsonIgnoreProperties("events")
+	private String venueName;
+//	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
+//	@JsonIgnoreProperties("event")
+	@ElementCollection
 	private List<Ticket> tickets;
 	private String image;
 	
 	public Event() {}
 	
-	public Event(String name, String eventType,  int[] dateAndTime, Venue venue, String image) {
+	public Event(String name, String eventType, String dateAndTime, String venueName, String image) {
 		this.name = name;
 		this.eventType= eventType;
 		this.dateAndTime = dateAndTime;
-		this.venue = venue;
+		this.venueName = venueName;
 		this.tickets = new ArrayList<Ticket>();
 		this.image = image;
 	}
@@ -63,24 +63,20 @@ public class Event {
 		this.name = name;
 	}
 
-	public int[] getDateAndTime() {
+	public String getDateAndTime() {
 		return dateAndTime;
 	}
 
-	public void setDateAndTime(int[] dateAndTime) {
+	public void setDateAndTime(String dateAndTime) {
 		this.dateAndTime = dateAndTime;
 	}
 
-	public Venue getVenue() {
-		return venue;
+	public String getVenueName() {
+		return venueName;
 	}
 
-	public void setVenue(Venue venue) {
-		this.venue = venue;
-	}
-	
-	public String getVenueName() {
-		return venue.getVenueName();
+	public void setVenueName(String venueName) {
+		this.venueName = venueName;
 	}
 
 	public List<Ticket> getTickets () {

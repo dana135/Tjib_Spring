@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.tjib.app.entities.UnauthorizedException;
 
 @Service
 public class AdminService {
@@ -20,6 +21,12 @@ public class AdminService {
 
 	public Admin getAdmin(String id) {
 		return repository.findById(id).get();
+	}
+	
+	public Admin findAdmin(String email, String password) {
+		Admin admin = repository.findByEmail(email);
+		if(admin != null && admin.getPassword().equals(password)) return admin;
+		else throw new UnauthorizedException();
 	}
 
 	public void addAdmin(Admin admin) {

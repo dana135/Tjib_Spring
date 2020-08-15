@@ -22,7 +22,7 @@ public class VenueController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value="/venues")
-	public void addVenue(Venue venue) {
+	public void addVenue(@RequestBody Venue venue) {
 		service.addVenue(venue);
 	}
 	

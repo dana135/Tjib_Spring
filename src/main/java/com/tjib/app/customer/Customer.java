@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_customer")
-@JsonIgnoreProperties({"cart", "orderHistory"})
+@JsonIgnoreProperties({"cart", "orderHistory", "shippingDetails"})
 public class Customer {
 	
 	@Id
@@ -22,8 +22,6 @@ public class Customer {
 	private String email;
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orderHistory;
-	@OneToOne
-	private Shipping shippingDetails;
 	
 	public Customer() {};
 	
@@ -33,7 +31,6 @@ public class Customer {
 		this.password = password;
 		this.email = email;
 		orderHistory = new ArrayList<Order>();
-		shippingDetails = null;
 	}
 
 	public int getId() {
@@ -78,11 +75,9 @@ public class Customer {
 	}
 
 	public Shipping getShippingDetails() {
-		return shippingDetails;
-	}
-
-	public void setShippingDetails(Shipping shippingDetails) {
-		this.shippingDetails = shippingDetails;
+		if(orderHistory != null && !orderHistory.isEmpty()) 
+			return orderHistory.get(orderHistory.size()-1).getShippingDetails();
+		else throw new NullPointerException();
 	}
 	
 	

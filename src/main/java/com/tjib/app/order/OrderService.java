@@ -38,12 +38,6 @@ public class OrderService {
 		repository.save(order);
 	}
 	
-	public void addTicket(int id, Ticket ticket) {
-		Order order = repository.findById(id).get();
-		order.addTicket(ticket);
-		repository.save(order);
-	}
-	
 	public void deleteOrder(int id) {
 		repository.deleteById(id);
 	}

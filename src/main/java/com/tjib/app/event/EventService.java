@@ -47,26 +47,32 @@ public class EventService {
 		return repository.findById(id).get().availableTickets();
 	}
 	
-	public void addEvent(Event event) {
-		repository.save(event);
+	public Event addEvent(Event event) {
+		 repository.save(event);
+		 return event;
 	}
 	
 	public void updateEvent(int id, Event event) {
-		repository.save(event);
+		Event e = repository.findById(id).get();
+		e.setName(event.getName());
+		e.setEventType(event.getEventType());
+		e.setDateAndTime(event.getDateAndTime());
+		e.setVenueName(event.getVenueName());
+		e.setImage(event.getImage());
+		repository.save(e);
 	}
 	
-	public void addTickets(int id, int numOfTickets, String section, int price, boolean marked) {
+	public void addTickets(int id, int numOfTickets, String section, int price) {
 		Event e = repository.findById(id).get();
 		
 		for(int i=0; i<numOfTickets; i++){
 			Ticket tickets = new Ticket();
-			tickets.setEvent(e);
+			tickets.setEventName(e.getName());
 			tickets.setSection(section);
-			if(marked) tickets.setPosition(i+1);
+			if(section.equals("SITTING")) tickets.setPosition(i+1);
 			else tickets.setPosition(0);
 			tickets.setPrice(price);
 			tickets.setStatus("available");
-			tickets.setMarked(marked);
 			ticketRepository.save(tickets);
 			e.addTicket(tickets);
 		}

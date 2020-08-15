@@ -7,13 +7,12 @@ import com.tjib.app.customer.Customer;
 import com.tjib.app.entities.Shipping;
 import com.tjib.app.entities.Ticket;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "tbl_order")
-@JsonIgnoreProperties("customer")
+@JsonIgnoreProperties({"customer", "shippingDetails"})
 public class Order {
 	
 	@Id
@@ -22,9 +21,9 @@ public class Order {
 	@ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
-	@ManyToOne
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Shipping shippingDetails;
-	@ElementCollection 
+	@OneToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
 	private List<Ticket> tickets;
 	private int price;
 	//yy/mm/dd/hr
@@ -62,11 +61,11 @@ public class Order {
 	}
 	
 	
-	public Shipping getShipping() {
+	public Shipping getShippingDetails() {
 		return shippingDetails;
 	}
 
-	public void setShipping(Shipping shippingDetails) {
+	public void setShippingDetails(Shipping shippingDetails) {
 		this.shippingDetails = shippingDetails;
 	}
 
@@ -77,14 +76,12 @@ public class Order {
 	public void setTickets(List<Ticket> tickets) {
 		this.tickets = tickets;
 	}
-	
-	public void initTickets() {
-		this.tickets = new ArrayList<Ticket>();
-	}
-	
+
+	/*
+	 * public void initTickets() { this.tickets = new ArrayList<Ticket>(); }
+	 */
 	public void addTicket(Ticket ticket) {
 		this.tickets.add(ticket);
-		for(Ticket t : tickets) t.getEvent().sellTicket(t);
 		this.price += ticket.getPrice();
 	}
 	

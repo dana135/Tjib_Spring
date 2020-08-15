@@ -49,18 +49,18 @@ public class EventController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value="/events")
-	public void addEvent (Event event) {
-		service.addEvent(event);
+	public Event addEvent (@RequestBody Event event) {
+		return service.addEvent(event);
 	}
 	
 	@RequestMapping(method=RequestMethod.PUT, value="/events/{id}")
-	public void updateEvent(@PathVariable int id, Event event) {
+	public void updateEvent(@PathVariable int id, @RequestBody Event event) {
 		service.updateEvent(id, event);
 	}
 	
 	@RequestMapping(method=RequestMethod.PUT, value="/events/{id}/addtickets")
-	public void addTickets(@PathVariable int id, int numOfTickets, String section, int price, boolean marked) {
-		service.addTickets(id, numOfTickets, section, price, marked);
+	public void addTickets(@PathVariable int id, @RequestParam int numOfTickets, @RequestParam String section, @RequestParam Integer price) {
+		service.addTickets(id, numOfTickets, section, price);
 	}
 	
 	@RequestMapping(method=RequestMethod.DELETE, value="/events/{id}")

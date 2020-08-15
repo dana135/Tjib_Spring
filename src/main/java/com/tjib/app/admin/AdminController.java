@@ -21,13 +21,18 @@ public class AdminController {
 		return service.getAdmin(id);
 	}
 	
+	@RequestMapping("/admins/login")
+	public Admin login(@RequestParam String email, @RequestParam String password) {
+		return service.findAdmin(email, password);
+	}
+	
 	@RequestMapping(method=RequestMethod.POST, value="/admins")
-	public void addAdmin (Admin admin) {
+	public void addAdmin (@RequestBody Admin admin) {
 		service.addAdmin(admin);
 	}
 	
 	@RequestMapping(method=RequestMethod.PUT, value="/admins/{id}")
-	public void updateAdmin(@PathVariable String id, Admin admin) {
+	public void updateAdmin(@PathVariable String id, @RequestBody Admin admin) {
 		service.updateAdmin(id, admin);
 	}
 	

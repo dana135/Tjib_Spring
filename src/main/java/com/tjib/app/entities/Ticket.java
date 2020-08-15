@@ -4,37 +4,35 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tjib.app.event.Event;
+import com.tjib.app.order.Order;
 
 @Entity
 @Table(name = "tbl_ticket")
-@JsonIgnoreProperties({"event", "customer"})
 public class Ticket {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "event_id")
-	@JsonIgnoreProperties("tickets")
-	private Event event;
+//	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
+//	@JoinColumn(name = "event_id")
+//	@JsonIgnoreProperties("tickets")
+//	private Event event;
+	private String eventName;
 	private String section;
 	//0 if unmarked
 	private int position;
 	private int price;
 	private String status;
-	@Column(nullable = true, columnDefinition = "BOOLEAN DEFAULT TRUE")
-	private boolean marked;
 	
 	public Ticket() {}
 	
-	public Ticket(int num, Event event, String section, int position, int price, boolean marked) {
+	public Ticket(int num, String event, String section, int position, int price) {
 		this.position = num;
-		this.event = event;
+		this.eventName = event;
 		this.section = section;
 		this.position = position;
 		this.price = price;
 		this.status = "available";
-		this.marked = marked;
 	}
 
 	public int getId() {
@@ -45,16 +43,22 @@ public class Ticket {
 		this.id = id;
 	}
 
-	public Event getEvent() {
-		return event;
-	}
-
-	public void setEvent(Event event) {
-		this.event = event;
-	}
+	/*
+	 * public Event getEvent() { return event; }
+	 * 
+	 * public void setEvent(Event event) { this.event = event; }
+	 */
 
 	public int getPosition() {
 		return position;
+	}
+
+	public String getEventName() {
+		return eventName;
+	}
+
+	public void setEventName(String eventName) {
+		this.eventName = eventName;
 	}
 
 	public void setPosition(int position) {
@@ -83,14 +87,6 @@ public class Ticket {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public boolean isMarked() {
-		return marked;
-	}
-
-	public void setMarked(boolean marked) {
-		this.marked = marked;
 	}
 	
 

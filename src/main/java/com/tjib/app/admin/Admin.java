@@ -7,14 +7,28 @@ import javax.persistence.*;
 public class Admin {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
 	private String username;
 	private String password;
-	
+	private String email;
+
 	public Admin() {}
 	
-	public Admin(String username, String password) {
+	public Admin(String username, String password, String email) {
 		this.username = username;
 		this.password = password;
+		this.email = email;
+	}
+	
+	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
@@ -33,6 +47,13 @@ public class Admin {
 		this.password = password;
 	}
 	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	
 
 }

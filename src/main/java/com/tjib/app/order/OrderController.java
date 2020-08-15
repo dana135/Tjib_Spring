@@ -38,11 +38,6 @@ public class OrderController {
 		service.returnOrder(id);
 	}
 	
-	@RequestMapping(method=RequestMethod.PUT, value="/orders/{id}/addticket")
-	public void addTicket(@PathVariable int id, Ticket ticket) {
-		service.addTicket(id, ticket);
-	}
-	
 	@RequestMapping(method=RequestMethod.DELETE, value="/orders/{id}")
 	public void deleteOrder(@PathVariable int id) {
 		service.deleteOrder(id);
