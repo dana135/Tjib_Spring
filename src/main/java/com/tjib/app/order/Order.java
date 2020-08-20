@@ -2,7 +2,6 @@ package com.tjib.app.order;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tjib.app.customer.Customer;
 import com.tjib.app.entities.Shipping;
 import com.tjib.app.entities.Ticket;
@@ -10,9 +9,13 @@ import com.tjib.app.entities.Ticket;
 import java.util.Date;
 import java.util.List;
 
+/*
+ * Represents a single order that a specific customer placed
+ * May contain multiple tickets
+ */
+
 @Entity
 @Table(name = "tbl_order")
-@JsonIgnoreProperties({"customer", "shippingDetails"})
 public class Order {
 	
 	@Id
@@ -26,24 +29,20 @@ public class Order {
 	@OneToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
 	private List<Ticket> tickets;
 	private int price;
-	//yy/mm/dd/hr
 	private Date orderTime;
-	private String status;
 	
-	public Order() {}
+	public Order() {} //empty constructor for jpa
 
-	public Order(int orderNum, Customer customer, Shipping shippingDetails, List<Ticket> tickets, int price,
-			Date orderTime, String status) {
-		super();
-		this.orderNum = orderNum;
+	public Order(Customer customer, Shipping shippingDetails, List<Ticket> tickets, int price, Date orderTime) { //constructor
 		this.customer = customer;
 		this.shippingDetails = shippingDetails;
 		this.tickets = tickets;
 		this.price = price;
 		this.orderTime = orderTime;
-		this.status = status;
 	}
 
+	//getters and setters
+	
 	public int getOrderNum() {
 		return orderNum;
 	}
@@ -77,10 +76,7 @@ public class Order {
 		this.tickets = tickets;
 	}
 
-	/*
-	 * public void initTickets() { this.tickets = new ArrayList<Ticket>(); }
-	 */
-	public void addTicket(Ticket ticket) {
+	public void addTicket(Ticket ticket) { //add a ticket to this order
 		this.tickets.add(ticket);
 		this.price += ticket.getPrice();
 	}
@@ -100,14 +96,5 @@ public class Order {
 	public void setOrderTime(Date orderTime) {
 		this.orderTime = orderTime;
 	}
-
-	public String getStatus() {
-		return status;
-	}
-	
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
 	
 }

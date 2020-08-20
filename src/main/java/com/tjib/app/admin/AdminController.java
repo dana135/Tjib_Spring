@@ -5,6 +5,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*
+ * Controller for admin requests
+ * Handles requests related to admin that sent to the server and sends responses
+ * Allows communication between the server and the client
+ */
+
 @RestController
 public class AdminController {
 	
@@ -29,6 +35,11 @@ public class AdminController {
 	@RequestMapping(method=RequestMethod.POST, value="/admins")
 	public void addAdmin (@RequestBody Admin admin) {
 		service.addAdmin(admin);
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value="/adminslist")
+	public void addAdmins (@RequestBody List<Admin> admins) {
+		service.addAdmins(admins);
 	}
 	
 	@RequestMapping(method=RequestMethod.PUT, value="/admins/{id}")

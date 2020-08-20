@@ -3,11 +3,15 @@ package com.tjib.app.customer;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tjib.app.entities.Shipping;
 import com.tjib.app.order.Order;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/*
+ * Represents a customer of the application.
+ * Can buy tickets to concerts, edit personal details and view order history.
+ */
 
 @Entity
 @Table(name = "tbl_customer")
@@ -15,7 +19,7 @@ import java.util.List;
 public class Customer {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String username;
 	private String password;
@@ -23,15 +27,16 @@ public class Customer {
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orderHistory;
 	
-	public Customer() {};
+	public Customer() {}; //empty constructor for jpa
 	
-	public Customer(String username, String password, String email) {
-		super();
+	public Customer(String username, String password, String email) { //constructor
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		orderHistory = new ArrayList<Order>();
 	}
+	
+	//getters and setters
 
 	public int getId() {
 		return id;
@@ -70,16 +75,9 @@ public class Customer {
 		this.orderHistory = orderHistory;
 	}
 	
-	public void addToOrderHistory(Order order) {
+	public void addToOrderHistory(Order order) { //add an order to order history
 		orderHistory.add(order);
 	}
-
-	public Shipping getShippingDetails() {
-		if(orderHistory != null && !orderHistory.isEmpty()) 
-			return orderHistory.get(orderHistory.size()-1).getShippingDetails();
-		else throw new NullPointerException();
-	}
-	
 	
 
 }

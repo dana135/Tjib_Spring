@@ -6,9 +6,12 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tjib.app.entities.Ticket;
-import com.tjib.app.venue.Venue;
 
 import java.util.List;
+
+/*
+ * Represents an event with tickets for sale
+ */
 
 @Entity
 @Table(name = "tbl_event")
@@ -19,22 +22,16 @@ public class Event {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String name;
-	// live concert / online concert / fan meeting
-	private String eventType;
+	private String eventType; // live concert / online concert / fan meeting
 	private String dateAndTime;
-//	@ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
-//	@JoinColumn(name = "venue_id")
-//	@JsonIgnoreProperties("events")
 	private String venueName;
-//	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
-//	@JsonIgnoreProperties("event")
 	@ElementCollection
 	private List<Ticket> tickets;
 	private String image;
 	
-	public Event() {}
+	public Event() {} //empty constructor for jpa
 	
-	public Event(String name, String eventType, String dateAndTime, String venueName, String image) {
+	public Event(String name, String eventType, String dateAndTime, String venueName, String image) { //constructor
 		this.name = name;
 		this.eventType= eventType;
 		this.dateAndTime = dateAndTime;
@@ -42,6 +39,8 @@ public class Event {
 		this.tickets = new ArrayList<Ticket>();
 		this.image = image;
 	}
+	
+	//getters and setters
 	
 	public int getId() {
 		return id;
@@ -87,32 +86,9 @@ public class Event {
 		this.tickets = tickets;
 	}
 	
-	public List<Ticket> availableTickets() {
-		List<Ticket> availableTickets = new ArrayList<Ticket>();
-		for(Ticket t : tickets) {
-			if(t.getStatus().equals("available")) availableTickets.add(t);
-		}
-		return availableTickets;
-	}
-	
-	public void addTicket(Ticket ticket) {
+	public void addTicket(Ticket ticket) { //add a ticket for sale for this event
 		this.tickets.add(ticket);
 	}
-	
-	public void sellTicket(Ticket ticket) {
-		for(int i=0; i<tickets.size(); i++) {
-			if(tickets.get(i).equals(ticket)) {
-				tickets.get(i).setStatus("unavailable");
-				break;
-			}
-		}
-	}
-	
-	/*
-	 * public void returnTicket(Ticket ticket) { for(int i=0; i<tickets.size(); i++)
-	 * { if(tickets.get(i).equals(ticket)) { tickets.get(i).setStatus("available");
-	 * break; } } }
-	 */
 	
 	public String getImage() {
 		return image;

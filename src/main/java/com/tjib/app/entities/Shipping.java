@@ -7,6 +7,11 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tjib.app.order.Order;
 
+/*
+ * Represents payment details of a single order
+ * Tickets related to this shipping will be sent via email
+ */
+
 @Entity
 @Table(name = "tbl_shipping")
 @JsonIgnoreProperties("order")
@@ -22,12 +27,11 @@ public class Shipping {
 	private String creditCard;
 	private int creditExpiration;
 	@ElementCollection
-	private List<Integer> ticketIds;
+	private List<Integer> ticketIds; //tickets related to this shipping
 	
-	public Shipping() {}
+	public Shipping() {} //empty constructor for jpa
 	
-	public Shipping(String firstName, String lastName, String creditCard, int creditExpiration, List<Integer> ticketIds) {
-		super();
+	public Shipping(String firstName, String lastName, String creditCard, int creditExpiration, List<Integer> ticketIds) { //constructor
 		order = null;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -36,6 +40,8 @@ public class Shipping {
 		this.ticketIds = ticketIds;
 	}
 
+	//getters and setters
+	
 	public int getId() {
 		return id;
 	}

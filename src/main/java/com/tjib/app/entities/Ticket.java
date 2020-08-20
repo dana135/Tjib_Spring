@@ -2,32 +2,26 @@ package com.tjib.app.entities;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tjib.app.event.Event;
-import com.tjib.app.order.Order;
+/*
+ * Represents a single ticket to a specific event
+ */
 
 @Entity
 @Table(name = "tbl_ticket")
 public class Ticket {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-//	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST, CascadeType.REFRESH})
-//	@JoinColumn(name = "event_id")
-//	@JsonIgnoreProperties("tickets")
-//	private Event event;
 	private String eventName;
 	private String section;
-	//0 if unmarked
 	private int position;
 	private int price;
-	private String status;
+	private String status; //available or unavailable (if sold)
 	
-	public Ticket() {}
+	public Ticket() {} //empty constructor for jpa
 	
-	public Ticket(int num, String event, String section, int position, int price) {
-		this.position = num;
+	public Ticket(String event, String section, int position, int price) { //constructor
 		this.eventName = event;
 		this.section = section;
 		this.position = position;
@@ -35,6 +29,8 @@ public class Ticket {
 		this.status = "available";
 	}
 
+	//getters and setters
+	
 	public int getId() {
 		return id;
 	}
@@ -43,11 +39,6 @@ public class Ticket {
 		this.id = id;
 	}
 
-	/*
-	 * public Event getEvent() { return event; }
-	 * 
-	 * public void setEvent(Event event) { this.event = event; }
-	 */
 
 	public int getPosition() {
 		return position;

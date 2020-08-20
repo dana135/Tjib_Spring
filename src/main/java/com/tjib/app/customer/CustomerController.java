@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.tjib.app.entities.Shipping;
-import com.tjib.app.entities.Ticket;
 import com.tjib.app.order.Order;
 
-import java.util.ArrayList;
 import java.util.List;
+
+/*
+ * Controller for customer requests
+ * Handles requests related to customer and shipping that sent to the server and sends responses
+ * Allows communication between the server and the client
+ */
 
 @RestController
 public class CustomerController {
@@ -36,11 +40,6 @@ public class CustomerController {
 		return service.findCustomerByEmail(email);
 	}
 	
-	@RequestMapping("/customers/{id}/shippingdetails")
-	public Shipping getShippingDetails(@PathVariable int id) {
-		return service.getShippingDetails(id);
-	}
-	
 	@RequestMapping("/customers/{id}/orders")
 	public List<Order> getOrderHistory(@PathVariable int id) {
 		return service.getOrderHistory(id);
@@ -51,17 +50,16 @@ public class CustomerController {
 		service.addCustomer(customer);
 	}
 	
-	@RequestMapping(method=RequestMethod.PATCH, value="/customers/{id}")
-	public void updateCustomer(@PathVariable int id, Customer customer) {
+	@RequestMapping(method=RequestMethod.POST, value="/customerslist")
+	public void addCustomers (@RequestBody List<Customer> customers) {
+		service.addCustomers(customers);
+	}
+	
+	@RequestMapping(method=RequestMethod.PUT, value="/customers/{id}")
+	public void updateCustomer(@PathVariable int id, @RequestBody Customer customer) {
 		service.updateCustomer(id, customer);
 	}
-	/*
-	@RequestMapping(method=RequestMethod.PUT, value="/customers/{id}/checkout2")
-	public void checkout2(@PathVariable int id, int ticketId, String firstName, String lastName, String country, 
-			String city, String street, int houseNum, String zipCode, String creditCard, int creditExpiration) {
-		service.checkout2(id, ticketId, firstName, lastName, country, city, street, houseNum, zipCode, creditCard, creditExpiration);
-	}
-	*/
+
 	@RequestMapping(method=RequestMethod.PUT, value="/customers/{id}/checkout", consumes= {"application/json;charset=UTF-8"})
 	public void checkout(@PathVariable int id, @RequestBody Shipping shipping) {
 		service.checkout(id, shipping);
@@ -82,10 +80,5 @@ public class CustomerController {
 	public void deleteAllShipping() {
 		service.deleteAllShipping();
 	}
-	@RequestMapping(method=RequestMethod.DELETE, value="/tickets")
-	public void deleteAllTickets() {
-		service.deleteAllTickets();
-	}
-
 
 }

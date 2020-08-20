@@ -6,15 +6,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.tjib.app.entities.Shipping;
 import com.tjib.app.entities.ShippingRepository;
 import com.tjib.app.entities.Ticket;
 import com.tjib.app.entities.TicketRepository;
-import com.tjib.app.entities.UnauthorizedException;
 import com.tjib.app.order.Order;
 import com.tjib.app.order.OrderRepository;
+
+/*
+ * Service for customer requests
+ * Implements the logic required to handle requests and updates the database
+ * Allows communication between the controller and the repository
+ */
 
 @Service
 public class CustomerService {
@@ -38,123 +42,82 @@ public class CustomerService {
 		return repository.findById(id).get();
 	}
 	
-	public Customer findCustomer(String email, String password) {
+	public Customer findCustomer(String email, String password) { //confirm customer by email and password
 		Customer customer = repository.findByEmail(email);
-		if(customer != null && customer.getPassword().equals(password)) return customer;
-		else throw new UnauthorizedException();
+		if(customer != null && customer.getPassword().equals(password)) return customer; //email exists and password is correct
+		return null; //no such customer
 	}
 	
 	public Customer findCustomerByEmail(String email) {
 		Customer customer = repository.findByEmail(email);
-		if(customer != null) return customer;
-		else throw new UnauthorizedException();
-	}
-	
-	public Shipping getShippingDetails(int id) {
-		return repository.findById(id).get().getShippingDetails();
+		return customer;
 	}
 	
 	public List<Order> getOrderHistory(int id) {
-		return repository.findById(id).get().getOrderHistory();
+		List<Order> orderList = new ArrayList<>();
+		List<Order> orders = new ArrayList<>();
+		repository.findById(id).get().getOrderHistory().forEach(orders::add);
+		//reverse the orders to be presented from new to old
+		for(int i = orders.size()-1; i >= 0; i--) orderList.add(orders.get(i));
+		return orderList;
 	}
 	
 	public void addCustomer(Customer customer) {
 		repository.save(customer);
 	}
 	
-	public void updateCustomer(int id, Customer customer) {
-		repository.save(customer);
+	public void addCustomers(List<Customer> customers) {
+		for(Customer customer : customers)
+			repository.save(customer);
 	}
 	
-	public void checkout(int id, Shipping shipping) {
+	public void updateCustomer(int id, Customer customer) {
+		Customer c = repository.findById(id).get();
+		//update only non-empty fields
+		if(!customer.getUsername().equals("")) c.setUsername(customer.getUsername());
+		if(!customer.getEmail().equals("")) c.setEmail(customer.getEmail());
+		if(!customer.getPassword().equals("")) c.setPassword(customer.getPassword());
+		repository.save(c);
+	}
+	
+	public void checkout(int id, Shipping shipping) { //place an order for a customer
 		Customer customer = repository.findById(id).get();
-		Order order = new Order();
-		Shipping shippingDetails = new Shipping();
-		List<Ticket> tickets = new ArrayList<>();
-		List<Integer> ticketIds = shipping.getTicketIds();
-		System.out.println(shipping.getLastName());
-		System.out.println(shipping.getTicketIds());
-//		String [] ticketIds = shipping.getTicketIds().split(" ");
-		int price = 0;
+		Order order = new Order(); //create a new order
+		Shipping shippingDetails = new Shipping(); //create new shipping details entity
+		List<Ticket> tickets = new ArrayList<>(); //tickets to add to the order entity
+		List<Integer> ticketIds = shipping.getTicketIds(); //get tickets' ids from shipping
+		int price = 0; //order price
 		
-		for(Integer t : ticketIds) {
+		for(Integer t : ticketIds) { //for each ticket mentioned in the shipping
 			Ticket ticket = ticketRepository.findById(t).get();
-			ticket.setStatus("unavailable");
-			tickets.add(ticket);
-			price += ticket.getPrice();
+			ticket.setStatus("unavailable"); //update status, ticket is sold
+			tickets.add(ticket); //add ticket to order
+			price += ticket.getPrice(); //update order price
 			ticketRepository.save(ticket);
 		}
-		
-		/*
-		for(int i=0; i<ticketIds.length; i++) {
-			Ticket ticket = ticketRepository.findById((Integer.valueOf(ticketIds[i]))).get();
-			ticket.setStatus("unavailable");
-			tickets.add(ticket);
-			price += ticket.getPrice();
-			ticketRepository.save(ticket);
-		}
-		*/
+
+		//set shipping details fields
 		shippingDetails.setOrder(order);
 		shippingDetails.setFirstName(shipping.getFirstName());
 		shippingDetails.setLastName(shipping.getLastName());
 		shippingDetails.setCreditCard(shipping.getCreditCard());
 		shippingDetails.setCreditExpiration(shipping.getCreditExpiration());
-		
+	
+		//set order fields
 		order.setCustomer(repository.findById(id).get());
 		order.setShippingDetails(shipping);
 		order.setTickets(tickets);
 		order.setPrice(price);
 		Calendar calendar = Calendar.getInstance();
 		order.setOrderTime(calendar.getTime());
-		order.setStatus("completed");
 		
 		orderRepository.save(order);
-		shippingRepository.save(shipping);
+		shippingRepository.save(shippingDetails);
 		
-		customer.addToOrderHistory(order);
+		customer.addToOrderHistory(order); //add the order to the customer's order history
 		repository.save(customer);
 		
 	}
-	
-	/*
-	public void checkout2(int id, int ticketId, String firstName, String lastName, String country, 
-			String city, String street, int houseNum, String zipCode, String creditCard, int creditExpiration) {
-		Customer customer = repository.findById(id).get();
-		Order order = new Order();
-		Shipping shipping = new Shipping();
-		Ticket tickets = ticketRepository.findById(ticketId).get();
-		List<Ticket> ticks = new ArrayList<>();
-		ticks.add(tickets);
-		
-		tickets.setStatus("unavailable");
-		
-		shipping.setOrder(order);
-		shipping.setFirstName(firstName);
-		shipping.setLastName(lastName);
-		shipping.setCountry(country);
-		shipping.setCity(city);
-		shipping.setStreet(street);
-		shipping.setHouseNum(houseNum);
-		shipping.setZipCode(zipCode);
-		shipping.setCreditCard(creditCard);
-		shipping.setCreditExpiration(creditExpiration);
-		
-		order.setCustomer(repository.findById(id).get());
-		order.setShippingDetails(shipping);
-		order.setTickets(ticks);
-		int price = 0;
-		order.setPrice(price);
-		Calendar calendar = Calendar.getInstance();
-		order.setOrderTime(calendar.getTime());
-		order.setStatus("completed");
-		
-		orderRepository.save(order);
-		shippingRepository.save(shipping);
-		
-		customer.addToOrderHistory(order);
-		repository.save(customer);
-	}
-	*/
 	
 	public void deleteCustomer(int id) {
 		repository.deleteById(id);
@@ -164,13 +127,8 @@ public class CustomerService {
 		repository.deleteAll();
 	}
 	
-	
-	
 	public void deleteAllShipping() {
 		shippingRepository.deleteAll();
-	}
-	public void deleteAllTickets() {
-		ticketRepository.deleteAll();
 	}
 
 }

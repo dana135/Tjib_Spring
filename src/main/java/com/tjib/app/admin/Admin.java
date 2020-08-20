@@ -2,6 +2,11 @@ package com.tjib.app.admin;
 
 import javax.persistence.*;
 
+/*
+ * Represents an administrator of the application
+ * Can edit, add or remove events, add venues, track orders
+ */
+
 @Entity
 @Table(name = "tbl_admin")
 public class Admin {
@@ -13,15 +18,15 @@ public class Admin {
 	private String password;
 	private String email;
 
-	public Admin() {}
+	public Admin() {} //empty constructor for jpa
 	
-	public Admin(String username, String password, String email) {
+	public Admin(String username, String password, String email) { //constructor
 		this.username = username;
 		this.password = password;
 		this.email = email;
 	}
 	
-	
+	//getters and setters
 
 	public int getId() {
 		return id;
@@ -54,6 +59,5 @@ public class Admin {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
 
 }

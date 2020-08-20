@@ -5,7 +5,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.tjib.app.entities.UnauthorizedException;
+
+/*
+ * Service for admin requests
+ * Implements the logic required to handle requests and updates the database
+ * Allows communication between the controller and the repository
+ */
 
 @Service
 public class AdminService {
@@ -23,14 +28,19 @@ public class AdminService {
 		return repository.findById(id).get();
 	}
 	
-	public Admin findAdmin(String email, String password) {
+	public Admin findAdmin(String email, String password) { //confirm admin by email and password
 		Admin admin = repository.findByEmail(email);
-		if(admin != null && admin.getPassword().equals(password)) return admin;
-		else throw new UnauthorizedException();
+		if(admin != null && admin.getPassword().equals(password)) return admin; //email exists and password is correct
+		return null; //no such admin
 	}
 
 	public void addAdmin(Admin admin) {
 		repository.save(admin);
+	}
+	
+	public void addAdmins(List<Admin> admins) {
+		for(Admin admin : admins)
+			repository.save(admin);
 	}
 
 	public void updateAdmin(String id, Admin admin) {
